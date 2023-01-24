@@ -1,34 +1,40 @@
 import React from 'react'
 import Todo from './Todo'
+import {selectTodoList, updateTodo, removeTodo, toggleTodo} from './todoSlice'
+import {useDispatch, useSelector} from 'react-redux'
 
-const Todos = ({todos, deleteEntry, completeTodo, handleEdit, filter}) => {
-    const filterData = type => {
-        let chosenData
-        switch (type) {
-            case 'Active':
-                chosenData = todos.filter(todo => !todo.completed)
-                break
-            case 'Completed':
-                chosenData = todos.filter(todo => todo.completed)
-                break
-            case 'All':
-            default:
-                chosenData = todos
-                break
+const Todos = () => {
+    const [editing, setEditing] = React.useState(null)
+    const dispatch = useDispatch()
+    const todos = useSelector(selectTodoList)
+
+    const handleEdit = todo => {
+        return () => setEditing(todo.id)
+    }
+
+    const handleCancel = () => {
+        setEditing(null)
+    }
+
+    const handleSave = todo => {
+        return title => {
+            dispatch(updateTodo({id: todo.id, title}))
+            setEditing(null)
         }
-        return chosenData
     }
 
     return (
         <div className="todoDisplay">
-            {filterData(filter).map(todo => (
+            {todos.map(todo => (
                 <Todo
                     key={todo.id}
-                    value={todo}
-                    deleteEntry={deleteEntry}
-                    completeTodo={completeTodo}
-                    id={todo.id}
-                    handleEdit={handleEdit}
+                    editing={editing === todo.id}
+                    todo={todo}
+                    onCancel={handleCancel}
+                    onDelete={todoId => dispatch(removeTodo(todoId))}
+                    onEdit={handleEdit(todo)}
+                    onSave={handleSave(todo)}
+                    onToggle={todoId => dispatch(toggleTodo(todoId))}
                 />
             ))}
         </div>

@@ -1,57 +1,46 @@
 import React from 'react'
+import {useDispatch, useSelector} from 'react-redux'
+import {changeFilter, clearCompleted, selectCount, selectFilter} from './todoSlice'
 
-const Footer = ({todos, chooseData, filter, clearCompleted}) => {
-    let todosLeftToComplete = todos.filter(todo => {
-        return !todo.completed
-    })
+export function pluralize(count, word) {
+    return count === 1 ? word : `${word}s`
+}
 
-    let todosCompleted = todos.filter(todo => {
-        return todo.completed
-    })
+const Footer = () => {
+    const {activeCount, completedCount} = useSelector(selectCount)
+    const filter = useSelector(selectFilter)
+    const dispatch = useDispatch()
+    const activeTodoWord = pluralize(activeCount, 'item')
 
-    let all = 'active',
-        active = '',
-        completed = ''
-
-    if (filter === 'All') {
-        all = 'active'
-        active = ''
-        completed = ''
-    } else if (filter === 'Active') {
-        all = ''
-        active = 'active'
-        completed = ''
-    } else if (filter === 'Completed') {
-        all = ''
-        active = ''
-        completed = 'active'
+    const handleChangeFilter = filterType => {
+        dispatch(changeFilter(filterType))
     }
-    let completedButtonClass = todosCompleted.length > 0 ? 'clear-complete' : 'clear-complete hide'
-
-    let phrasing = todosLeftToComplete.length === 1 ? 'todo' : 'todos'
-
-    if (todos.length === 0) return ''
 
     return (
-        <div className="Footer">
-            <div className="todos-left">
-                {todosLeftToComplete.length} <span className="mobile-hide">{phrasing}</span> left
-            </div>
+        <footer className="Footer">
+            <span className="todos-left">
+                <strong>{activeCount}</strong> {activeTodoWord} left
+            </span>
             <div className="nav-buttons">
-                <div className={`all ${all}`} onClick={() => chooseData('All')}>
+                <button className={filter === 'all' ? 'active' : ''} onClick={() => handleChangeFilter('all')}>
                     All
-                </div>
-                <div className={`active-elements ${active}`} onClick={() => chooseData('Active')}>
+                </button>
+                <button className={filter === 'active' ? 'active' : ''} onClick={() => handleChangeFilter('active')}>
                     Active
-                </div>
-                <div className={`completed ${completed}`} onClick={() => chooseData('Completed')}>
+                </button>
+                <button
+                    className={filter === 'completed' ? 'active' : ''}
+                    onClick={() => handleChangeFilter('completed')}
+                >
                     Completed
-                </div>
+                </button>
             </div>
-            <button className={completedButtonClass} onClick={clearCompleted}>
-                Clear completed
-            </button>
-        </div>
+            {completedCount > 0 ? (
+                <button type="button" className="clear-completed" onClick={() => dispatch(clearCompleted())}>
+                    Clear completed
+                </button>
+            ) : null}
+        </footer>
     )
 }
 

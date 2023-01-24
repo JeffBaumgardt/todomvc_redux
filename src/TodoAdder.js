@@ -1,42 +1,39 @@
 import React from 'react'
+import {useDispatch} from 'react-redux'
 import './App.css'
+import {addTodo} from './todoSlice'
 
 const TodoAdder = ({handleSubmit, toggleAll, todos}) => {
-    const [todo, setTodo] = React.useState('')
+    const [newTodo, setNewTodo] = React.useState('')
+    const dispatch = useDispatch()
 
-    const handleChange = e => {
-        setTodo(e.target.value)
+    const handleChange = event => {
+        setNewTodo(event.target.value)
     }
 
-    const handleSubmitAndClear = () => {
-        handleSubmit({todo})
+    const handleNewTwoKeyDown = event => {
+        if (event.key !== 'Enter') return
 
-        setTodo('')
-    }
+        const title = newTodo.trim()
 
-    const enteredEnter = event => {
-        if (event.keyCode === 13) {
-            event.preventDefault()
-            handleSubmitAndClear()
+        if (title) {
+            dispatch(addTodo(title))
+            setNewTodo('')
         }
-    }
 
-    const toggleAllClass = todos.length > 0 ? 'toggle-all-button' : 'toggle-all-hide'
+        event.preventDefault()
+    }
 
     return (
         <form className="input">
-            <label className={toggleAllClass} onClick={toggleAll} style={{background: 'white'}}>
-                &#10003;
-            </label>
-
             <input
                 type="text"
                 className="new-todo"
                 autoComplete="off"
                 name="todo"
                 onChange={handleChange}
-                value={todo}
-                onKeyDown={enteredEnter}
+                value={newTodo}
+                onKeyDown={handleNewTwoKeyDown}
                 style={{background: 'white'}}
                 placeholder="What needs to be done?"
             />

@@ -1,6 +1,6 @@
 {
-    "homepage": "https://github.com/JeffBaumgardt/todomvc_base",
-    "name": "todomvc_base",
+    "homepage": "https://github.com/JeffBaumgardt/todomvc_redux",
+    "name": "todomvc_redux",
     "version": "1.0.0",
     "private": true,
     "dependencies": {
